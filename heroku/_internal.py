@@ -96,13 +96,20 @@ def build_pip_command(*extra_args: str) -> list[str]:
     """
     uv = find_uv()
     is_system = sys.prefix == getattr(sys, "base_prefix", sys.prefix)
+    is_root = hasattr(os, "geteuid") and os.geteuid() == 0
     system_flag = ["--system"] if is_system else []
 
-    if uv and " " not in uv:
-        return [uv, "pip", "install", *system_flag, *extra_args]
+    if uv and "--user" in extra_args and not (is_root or "DOCKER" in os.environ):
+        # uv doesn't support pip's `--user` installs, fall back to pip
+        uv = None
 
     if uv:
-        return [sys.executable, "-m", "uv", "pip", "install", *system_flag, *extra_args]
+        args = tuple(arg for arg in extra_args if arg != "--user")
+
+        if " " not in uv:
+            return [uv, "pip", "install", *system_flag, *args]
+
+        return [sys.executable, "-m", "uv", "pip", "install", *system_flag, *args]
 
     return [
         sys.executable,
