@@ -711,7 +711,6 @@ class LoaderMod(loader.Module):
         cmd = utils.build_pip_command(
             "--upgrade",
             "-q",
-            "--no-warn-script-location",
             *(["--user"] if need_user_flag else []),
             *requirements,
         )

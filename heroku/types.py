@@ -559,7 +559,6 @@ class Module:
                 *utils.build_pip_command(
                     "--upgrade",
                     "-q",
-                    "--no-warn-script-location",
                     *["--user"] if USER_INSTALL else [],
                     *requirements,
                 ),

@@ -103,7 +103,6 @@ def deps():
         build_pip_command(
             "--upgrade",
             "-q",
-            "--no-warn-script-location",
             "-r",
             "requirements.txt",
         ),

@@ -95,12 +95,14 @@ def build_pip_command(*extra_args: str) -> list[str]:
     :return: Command list ready for subprocess execution
     """
     uv = find_uv()
+    is_system = sys.prefix == getattr(sys, "base_prefix", sys.prefix)
+    system_flag = ["--system"] if is_system else []
 
     if uv and " " not in uv:
-        return [uv, "pip", "install", *extra_args]
+        return [uv, "pip", "install", *system_flag, *extra_args]
 
     if uv:
-        return [sys.executable, "-m", "uv", "pip", "install", *extra_args]
+        return [sys.executable, "-m", "uv", "pip", "install", *system_flag, *extra_args]
 
     return [
         sys.executable,
