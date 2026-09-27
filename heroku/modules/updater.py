@@ -538,7 +538,7 @@ class UpdaterMod(loader.Module):
                         os.path.dirname(utils.get_base_dir()),
                         "requirements.txt",
                     ),
-                    "--user",
+                    *["--user"] if loader.USER_INSTALL else [],
                 ),
                 check=True,
                 timeout=1200,

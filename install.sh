@@ -152,12 +152,22 @@ install_python_packages() {
 
 	info "Installing Python dependencies..."
 	"${RUN_AS_USER[@]}" "$venv_python" -m pip install --upgrade pip setuptools wheel >>"$LOG_FILE" 2>&1 || fail "Pip upgrade failed." 4
-	"${RUN_AS_USER[@]}" "$venv_python" -m pip install --upgrade -r requirements.txt --disable-pip-version-check >>"$LOG_FILE" 2>&1 || fail "Requirements installation failed." 4
+	"${RUN_AS_USER[@]}" "$venv_python" -m pip install -q uv >>"$LOG_FILE" 2>&1 || true
+
+	if [ -x "$VENV_DIR/bin/uv" ]; then
+		"${RUN_AS_USER[@]}" env VIRTUAL_ENV="$PWD/$VENV_DIR" "$VENV_DIR/bin/uv" \
+			pip install --upgrade -r requirements.txt >>"$LOG_FILE" 2>&1 ||
+			fail "Requirements installation failed." 4
+	else
+		"${RUN_AS_USER[@]}" "$venv_python" -m pip install --upgrade \
+			-r requirements.txt --disable-pip-version-check >>"$LOG_FILE" 2>&1 ||
+			fail "Requirements installation failed." 4
+	fi
 }
 
 start_app() {
 	info "Starting..."
-	"${RUN_AS_USER[@]}" "$VENV_DIR/bin/python" -m "$MODULE_NAME" "$@"
+	"${RUN_AS_USER[@]}" env VIRTUAL_ENV="$PWD/$VENV_DIR" "$VENV_DIR/bin/python" -m "$MODULE_NAME" "$@"
 }
 
 clear || true
