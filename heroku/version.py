@@ -51,7 +51,9 @@ async def check_branch(me_id: int, allowed_ids: list, self):
 
     try:
         with git.Repo(path=repo_path) as repo:
-            if me_id in allowed_ids:
+            # Empty list means the allowed-ids source is unavailable
+            # (e.g. a personal fork without modules-web) - don't force master
+            if not allowed_ids or me_id in allowed_ids:
                 return
 
             branch_name = get_branch_name(repo_path)
