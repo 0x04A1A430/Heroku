@@ -6,7 +6,7 @@
 
 # ©️ Codrago, 2024-2030
 # This file is a part of Heroku Userbot
-# 🌐 https://github.com/ZetGoHack/Heroku
+# 🌐 https://github.com/0x04A1A430/Heroku
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
@@ -17,11 +17,13 @@ import contextlib
 import contextvars
 import functools
 import html
+import importlib.util
 import inspect
 import logging
 import os
 import random
 import re
+import shutil
 import signal
 import subprocess
 import sys
@@ -62,6 +64,52 @@ def register_secrets(data):
     elif isinstance(data, (list, tuple)):
         for value in data:
             register_secrets(value)
+
+
+def find_uv() -> str | None:
+    """Locate a usable uv executable.
+
+    Checks for `uv` on PATH first, then for the `uv` module which can be
+    invoked via `python -m uv` (e.g. when uv is installed as a pip package).
+
+    :return: Command list prefix element or None if uv is not available
+    """
+    uv_path = shutil.which("uv")
+
+    if uv_path:
+        return uv_path
+
+    if importlib.util.find_spec("uv") is not None:
+        return f"{sys.executable} -m uv"
+
+    return None
+
+
+def build_pip_command(*extra_args: str) -> list[str]:
+    """Build an install command for Python packages.
+
+    Prefers `uv` (via `uv pip` or `python -m uv pip`) and falls back to
+    `python -m pip` when uv is not available.
+
+    :param extra_args: Additional arguments to append to the command
+    :return: Command list ready for subprocess execution
+    """
+    uv = find_uv()
+
+    if uv and " " not in uv:
+        return [uv, "pip", "install", *extra_args]
+
+    if uv:
+        return [sys.executable, "-m", "uv", "pip", "install", *extra_args]
+
+    return [
+        sys.executable,
+        "-m",
+        "pip",
+        "install",
+        "--disable-pip-version-check",
+        *extra_args,
+    ]
 
 
 def redact(text):

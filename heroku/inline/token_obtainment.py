@@ -6,7 +6,7 @@
 
 # ©️ Codrago, 2024-2030
 # This file is a part of Heroku Userbot
-# 🌐 https://github.com/ZetGoHack/Heroku
+# 🌐 https://github.com/0x04A1A430/Heroku
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
@@ -132,7 +132,7 @@ class TokenObtainment(InlineUnit):
 
                 if "DOCKER" in os.environ:
                     m = await conv.send_file(
-                        "https://raw.githubusercontent.com/ZetGoHack/Heroku/refs/heads/master/assets/heroku-ava.png"
+                        "https://raw.githubusercontent.com/0x04A1A430/Heroku/refs/heads/master/assets/heroku-ava.png"
                     )
                 else:
                     m = await conv.send_file(

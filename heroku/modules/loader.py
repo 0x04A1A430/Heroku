@@ -8,7 +8,7 @@
 
 # ©️ Codrago, 2024-2030
 # This file is a part of Heroku Userbot
-# 🌐 https://github.com/ZetGoHack/Heroku
+# 🌐 https://github.com/0x04A1A430/Heroku
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
@@ -83,7 +83,7 @@ class LoaderMod(loader.Module):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
                 "MODULES_REPO",
-                "https://raw.githubusercontent.com/coddrago/modules/main",
+                "https://raw.githubusercontent.com/0x04A1A430/modules/main",
                 lambda: self.strings["repo_config_doc"],
                 validator=loader.validators.Link(),
             ),
@@ -129,7 +129,7 @@ class LoaderMod(loader.Module):
         modules = list(
             filter(
                 lambda x: not x.startswith(
-                    "https://raw.githubusercontent.com/coddrago/modules/main"
+                    "https://raw.githubusercontent.com/0x04A1A430/modules/main"
                 ),
                 utils.array_sum(
                     map(
@@ -699,7 +699,7 @@ class LoaderMod(loader.Module):
                 "💫 <b>Joined <a"
                 f' href="https://t.me/{channel.username}">{utils.escape_html(channel.title)}</a></b>'
             ),
-            photo="https://raw.githubusercontent.com/coddrago/assets/refs/heads/main/heroku/joined_jr.png",
+            photo="https://raw.githubusercontent.com/0x04A1A430/assets/refs/heads/main/heroku/joined_jr.png",
         )
 
     async def install_requirements(self, requirements: list):
@@ -708,18 +708,13 @@ class LoaderMod(loader.Module):
         )
         need_user_flag = loader.USER_INSTALL and not is_venv
 
-        cmd = [
-            sys.executable,
-            "-m",
-            "pip",
-            "install",
+        cmd = utils.build_pip_command(
             "--upgrade",
             "-q",
-            "--disable-pip-version-check",
             "--no-warn-script-location",
             *(["--user"] if need_user_flag else []),
             *requirements,
-        ]
+        )
 
         utils.ensure_child_watcher()
         try:
@@ -858,8 +853,11 @@ class LoaderMod(loader.Module):
             return False
 
         if re.search(r"# ?scope: ?heroku_min", doc):
-            ver = re.search(r"# ?scope: ?heroku_min ((?:\d+\.){2}\d+)", doc).group(1)
-            ver_ = tuple(map(int, ver.split(".")))
+            ver = re.search(r"# ?scope: ?heroku_min ((?:\d+\.){2,}\d+)", doc).group(1)
+            ver_ = tuple(
+                int(match.group()) if (match := re.match(r"\d+", part)) else 0
+                for part in ver.split(".")
+            )
             if main.__version__ < ver_:
                 logger.error(
                     "Module %s requires Heroku %s, current version is %s",

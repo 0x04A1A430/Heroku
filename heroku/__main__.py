@@ -8,7 +8,7 @@
 
 # ©️ Codrago, 2024-2030
 # This file is a part of Heroku Userbot
-# 🌐 https://github.com/ZetGoHack/Heroku
+# 🌐 https://github.com/0x04A1A430/Heroku
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
@@ -21,7 +21,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from ._internal import restart
+from ._internal import build_pip_command, restart
 
 if "--no-git" in sys.argv:
     os.environ["HEROKU_NO_GIT"] = "1"
@@ -100,20 +100,15 @@ def get_file_hash(filename):
 
 def deps():
     subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "pip",
-            "install",
+        build_pip_command(
             "--upgrade",
             "-q",
-            "--disable-pip-version-check",
             "--no-warn-script-location",
             "-r",
             "requirements.txt",
-        ],
+        ),
         check=True,
-        timeout=600,
+        timeout=1200,
         capture_output=True,
     )
     with open(".requirements_hash", "w") as f:

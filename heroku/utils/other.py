@@ -1,6 +1,6 @@
 # ©️ Codrago, 2024-2030
 # This file is a part of Heroku Userbot
-# 🌐 https://github.com/ZetGoHack/Heroku
+# 🌐 https://github.com/0x04A1A430/Heroku
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
@@ -24,6 +24,8 @@ from herokutl.tl.functions.channels import (
 from herokutl.tl.types import (
     ChatAdminRights,
 )
+
+from .._internal import build_pip_command, find_uv  # noqa: F401
 
 from ..tl_cache import CustomTelegramClient
 from ..types import ListLike
@@ -256,7 +258,7 @@ async def allowed_ids() -> list[int]:
     try:
         content = await run_sync(
             fetch_text,
-            "https://raw.githubusercontent.com/coddrago/modules-web/main/mods/ids/allowed_ids.txt",
+            "https://raw.githubusercontent.com/0x04A1A430/modules-web/main/mods/ids/allowed_ids.txt",
             max_size=1024 * 1024,
         )
         return [int(line.strip()) for line in content.splitlines() if line.strip()]
